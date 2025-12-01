@@ -1,0 +1,34 @@
+class Solution {
+public:
+    int solve(vector<int> &nums, vector<int> &dp, int idx, int n) {
+        if(idx > n) {
+            return 0;
+        }
+        if(dp[idx] != -1) {
+            return dp[idx];
+        }
+
+        int steal = nums[idx] + solve(nums, dp, idx + 2, n);
+        int skip = solve(nums, dp, idx + 1, n);
+
+        return dp[idx] = max(steal, skip); 
+    }
+    int rob(vector<int>& nums) {
+        if(nums.size() == 1) {
+            return nums[0];
+        }
+        if(nums.size() == 2) {
+            return max(nums[0], nums[1]);
+        }
+
+        vector<int> dp1(101, -1);
+        //if 0th index element is choosen, then should ignore the last element of the nums
+        int first_house_index = solve(nums, dp1, 0, nums.size() - 2);
+
+        vector<int> dp2(101, -1);
+        //if 1th index element is choosen, then we can go upto last element of nums
+        int second_house_index = solve(nums, dp2, 1, nums.size() - 1);
+
+        return max(first_house_index, second_house_index);
+    }
+};
