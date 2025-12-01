@@ -1,0 +1,54 @@
+//for only basic recursive approach, it will give TLE
+
+//recursion + memoization approach - top down approach
+// class Solution {
+// public:
+//     int solve(vector<int> &nums, vector<int> &dp, int idx) {
+//         if(idx >= nums.size()) {
+//             return 0;
+//         }
+//         if(dp[idx] != -1) {
+//             return dp[idx];
+//         }
+
+//         int steal = nums[idx] + solve(nums, dp, idx + 2);
+//         int skip = solve(nums, dp, idx + 1);
+
+//         return dp[idx] = max(steal, skip); 
+//     }
+//     int rob(vector<int>& nums) {
+//         int idx = 0; // first house
+//         vector<int> dp(101, -1);
+
+//         return solve(nums, dp, idx);
+//     }
+// };
+
+//bottom up approach
+class Solution {
+public:
+    int solve(vector<int> &nums) {
+        vector<int> bottomup(nums.size() + 1, 0);
+        if(nums.size() == 1) {
+            return nums[0];
+        }
+        bottomup[0] = 0;
+        bottomup[1] = nums[0];
+        int maxStolenMoney = INT_MIN;
+        //bottomup[i] = money stolen till i house
+        for(int i = 2; i <= nums.size(); i++) {
+            //because bottomup is taken of 1 more length
+            int steal = nums[i - 1] + bottomup[i - 2];
+            int skip = bottomup[i - 1];
+
+            bottomup[i] = max(steal, skip);
+            maxStolenMoney = max(maxStolenMoney, bottomup[i]);
+        }
+
+        return maxStolenMoney;
+    }
+    int rob(vector<int>& nums) {
+
+        return solve(nums);
+    }
+};
