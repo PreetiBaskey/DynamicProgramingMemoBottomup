@@ -1,0 +1,50 @@
+//basic recursion will not work due to TLE
+//memoization approach
+// class Solution {
+// public:
+//     int solve(int n, vector<int> &dp) {
+//         if(n < 0) {
+//             return 0;
+//         }
+//         if(n == 0) {
+//             return 1;
+//         }
+//         if(dp[n] != -1) {
+//             return dp[n];
+//         }
+//         int one_step = solve(n - 1, dp);
+//         int two_step = solve(n - 2, dp);
+
+//         return dp[n] = one_step + two_step;
+//     }
+//     int climbStairs(int n) {
+//         vector<int> dp(n + 1, -1);
+
+//         return solve(n, dp);
+//     }
+// };
+
+//bottom up approach
+class Solution {
+public:
+    int solve(int n) {
+        if(n == 1 || n == 2 || n == 3) {
+            return n;
+        }
+        vector<int> bottomup(n + 1);
+        bottomup[0] = 0;
+        bottomup[1] = 1;
+        bottomup[2] = 2;
+        //bottom[i] = no of ways to clim i stairs
+        for(int i = 3; i <= n; i++) {
+            bottomup[i] = bottomup[i - 1] + bottomup[i - 2];
+        } 
+
+        return bottomup[n];
+    }
+    int climbStairs(int n) {
+    
+        return solve(n);
+    }
+};
+
