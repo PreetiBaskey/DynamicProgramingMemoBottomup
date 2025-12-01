@@ -1,0 +1,33 @@
+class Solution {
+public:
+    vector<vector<int>> dp;
+    int dfs(vector<int> &nums, int target, int idx) {
+        if(idx >= nums.size() || target < 0) {
+            return 0;
+        }
+        if(target == 0) {
+            return 1;
+        }
+
+        if(dp[idx][target] != -1) {
+            return dp[idx][target];
+        }
+
+        int oldTarget = target;
+        int newTarget = target - nums[idx];
+
+        //take
+        int take = dfs(nums, newTarget, 0);
+
+        //not take
+        int notTake = dfs(nums, oldTarget, idx + 1);
+
+        return dp[idx][target] = take + notTake;
+    }
+    int combinationSum4(vector<int>& nums, int target) {
+        dp.assign(201, vector<int>(1001, -1));
+        int idx = 0;
+        
+        return dfs(nums, target, idx);
+    }
+}; 
