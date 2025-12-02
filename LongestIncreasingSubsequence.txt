@@ -1,0 +1,32 @@
+class Solution {
+public:
+    int solve(vector<int> &nums, int prev, int curr, vector<vector<int>> &dp) {
+        if(curr >= nums.size()) {
+            return 0;
+        }
+        //index can not be -1, that why we are checking here prev(index) != -1
+        if(prev != -1 && dp[prev][curr] != -1) {
+            return dp[prev][curr];
+        }
+        int take = 0;
+        if(prev == -1 || nums[prev] < nums[curr]) {
+            take = 1 + solve(nums, curr, curr + 1, dp);
+        }
+        int skip = solve(nums, prev, curr + 1, dp);
+
+        //we are checking here also, that if prev(index) != -1, then only, we will store the result in the dp
+        if(prev != -1) {
+            dp[prev][curr] = max(take, skip);
+        }
+
+        return max(take, skip);
+    }
+    int lengthOfLIS(vector<int>& nums) {
+        int prev = -1;
+        int curr = 0;
+        int n = nums.size();
+        vector<vector<int>> dp(2501, vector<int>(2501, -1));
+
+        return solve(nums, prev, curr, dp);
+    }
+};
