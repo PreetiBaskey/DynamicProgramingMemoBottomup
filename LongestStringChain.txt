@@ -1,0 +1,61 @@
+class Solution {
+public:
+    static bool myFunction(string &word1, string &word2) {
+        return word1.length() < word2.length();
+    }
+    bool isPredecessor(string &prev, string &curr) {
+        if(prev.length() + 1 != curr.length()) {
+            return false;
+        }
+        int i = 0, j = 0, diff = 0;
+        while(i < prev.length() && j < curr.length()) {
+            if(prev[i] == curr[j]) {
+                i++;
+                j++;
+            }
+            else {
+                diff++;
+                j++;
+                if(diff > 1) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+    int solve(vector<string> &words, int prev, int curr, vector<vector<int>> &dp) {
+        if(curr == words.size()) {
+            return 0;
+        }
+
+        if(prev != -1 && dp[prev][curr] != -1) {
+            return dp[prev][curr];
+        }
+
+        int take = 0;
+        if(prev == -1) {
+            take = 1 + solve(words, curr, curr + 1, dp);
+        }
+        else if(isPredecessor(words[prev], words[curr])) {
+            take = 1 + solve(words, curr, curr + 1, dp);
+        }
+        
+        int not_take = solve(words, prev, curr + 1, dp);
+
+        if(prev != -1) {
+            dp[prev][curr] = max(take, not_take);
+        }
+
+        return max(take, not_take);
+    }
+    int longestStrChain(vector<string>& words) {
+        sort(begin(words), end(words), myFunction);
+        int prev = -1;
+        int curr = 0;
+
+        vector<vector<int>> dp(1001, vector<int>(1001, -1));
+
+        return solve(words, prev, curr, dp);
+    }
+};
