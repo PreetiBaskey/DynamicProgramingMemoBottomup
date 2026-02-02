@@ -1,0 +1,51 @@
+//approach - 1
+//time complexity - O(n*amount)
+//space complexity - O(n*amount)
+class Solution {
+public:
+    // Helper function to find number of combinations using recursion + memoization
+    int solve(vector<int> &coins, int amount, vector<vector<int>> &memo, int idx) {
+        int n = coins.size();
+
+        // BASE CASE: If amount is reached exactly, we found 1 valid combination
+        if(amount == 0) {
+            return 1;
+        }
+        
+        // BASE CASE: If we've considered all coins but amount > 0, this path failed
+        if(idx == n) {
+            return 0;
+        }
+
+        // MEMOIZATION: Return result if we have already calculated it for this state
+        if(memo[idx][amount] != -1) {
+            return memo[idx][amount];
+        } 
+
+        // If current coin is too large, we MUST skip it and move to the next
+        if(amount < coins[idx]) {
+            return solve(coins, amount, memo, idx + 1);
+        }
+
+        /* 
+           RECURSIVE CHOICES:
+           1. Take: Use current coin and stay at 'idx' (infinite supply allowed)
+           2. Not Take: Skip current coin and move to 'idx + 1'
+        */
+        int take = solve(coins, amount - coins[idx], memo, idx);
+        int notTake = solve(coins, amount, memo, idx + 1);
+
+        // Store and return the total ways found from both choices
+        return memo[idx][amount] = take + notTake;
+    }
+
+    int change(int amount, vector<int>& coins) {
+        int n = coins.size();
+        
+        // memo[index][amount] stores results to avoid redundant calculations
+        // Size: (n + 1) rows for coins, (amount + 1) columns for target values
+        vector<vector<int>> memo(n + 1, vector<int>(amount + 1, -1));
+
+        return solve(coins, amount, memo, 0);
+    }
+};
