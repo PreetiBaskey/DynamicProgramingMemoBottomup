@@ -1,0 +1,65 @@
+//approach - 1 - using dynamic programing - 0-1 knapsack problem
+//time complexity - O(2^n)
+//space complexity - O(n)
+// class Solution {
+// public:
+//     int solve(vector<int> &nums, int target, int currSum, int idx) {
+//         if(idx == nums.size()) {
+//             if(currSum == target) {
+//                 return 1;
+//             }
+//             else return 0;
+//         }
+
+//         int plus = solve(nums, target, currSum + nums[idx], idx + 1);
+//         int minus = solve(nums, target, currSum - nums[idx], idx + 1);
+
+//         return plus + minus;
+//     } 
+//     int findTargetSumWays(vector<int>& nums, int target) {
+//         int idx = 0;
+//         int currSum = 0;
+
+//         return solve(nums, target, 0, idx);
+//     }
+// };
+
+
+
+//approach - 2 - using dynamic prgramming, memoization
+//time complexity - O(n * s), s - possible sum of array elements
+//space complexity - O(n * s), s - possible sum of array elements
+class Solution {
+public:
+    /**
+     * @param currSum: Current running sum of elements
+     * @param idx: Current index in the nums array
+     */
+    int solve(vector<int> &nums, int target, vector<vector<int>> &memo, int currSum, int idx) {
+        // Base Case: All numbers processed
+        if(idx == nums.size()) {
+            return (currSum == target) ? 1 : 0;
+        }
+
+        // Use +1000 offset to map negative sums (min -1000) to positive array indices (min 0)
+        // This prevents "Array Index Out of Bounds" errors
+        if(memo[currSum + 1000][idx] != -1) {
+            return memo[currSum + 1000][idx];
+        }
+
+        // Binary Choice: Either add the current number or subtract it
+        int plus = solve(nums, target, memo, currSum + nums[idx], idx + 1);
+        int minus = solve(nums, target, memo, currSum - nums[idx], idx + 1);
+
+        // Store result in memo table using the same +1000 offset
+        return memo[currSum + 1000][idx] = plus + minus;
+    } 
+
+    int findTargetSumWays(vector<int>& nums, int target) {
+        // memo[sum_range][index_range]
+        // 2001 rows cover sums from -1000 to 1000 (total range of 2000 + 1 for zero)
+        vector<vector<int>> memo(2001, vector<int>(nums.size() + 1, -1));
+
+        return solve(nums, target, memo, 0, 0);
+    }
+};
