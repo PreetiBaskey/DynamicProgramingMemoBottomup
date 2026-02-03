@@ -1,0 +1,51 @@
+//approach - 1
+//time complexity - O(l * m * n), l = number of string in input
+//space complexity - O(l * m * n), l = number of string in input
+class Solution {
+public:
+    /**
+     * @param m: remaining zeros allowed
+     * @param n: remaining ones allowed
+     * @param idx: current string being considered
+     */
+    int solve(vector<pair<int, int>> &vec, vector<vector<vector<int>>> &memo, int m, int n, int idx) {
+        // Base Case: No more strings left to pick
+        if(idx == vec.size()) {
+            return 0;
+        }
+
+        // Return cached result to avoid redundant exponential calculations
+        if(memo[idx][m][n] != -1) {
+            return memo[idx][m][n];
+        }
+
+        // Option 1: Skip the current string and move to the next
+        int notTake = solve(vec, memo, m, n, idx + 1);
+
+        // Option 2: Take the current string (only if it fits within remaining m and n)
+        int take = 0;
+        if(vec[idx].first <= m && vec[idx].second <= n) {
+            // Add 1 to count this string and subtract its costs from m and n
+            take = 1 + solve(vec, memo, m - vec[idx].first, n - vec[idx].second, idx + 1);
+        }
+
+        // Store and return the best outcome between taking or skipping
+        return memo[idx][m][n] = max(take, notTake);
+    }
+
+    int findMaxForm(vector<string>& strs, int m, int n) {
+        // Pre-calculate zero and one counts for each string to avoid re-scanning
+        vector<pair<int,int>> vec;
+        for(string &str: strs) {
+            int zero = count(begin(str), end(str), '0');
+            int one = count(begin(str), end(str), '1');
+            vec.push_back({zero, one});
+        }
+
+        // 3D Memo Table: memo[index][zeros_left][ones_left]
+        // Size covers constraints: strs <= 600, m <= 100, n <= 100
+        vector<vector<vector<int>>> memo(vec.size(), vector<vector<int>>(m + 1, vector<int>(n + 1, -1)));
+
+        return solve(vec, memo, m, n, 0);
+    }
+};
