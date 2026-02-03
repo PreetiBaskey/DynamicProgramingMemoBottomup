@@ -1,0 +1,41 @@
+//approach - 1 - recursion + memo
+//time complexity - O(n^3)
+//space complexity - o(n^2)
+class Solution {
+public:
+    // Helper function to find the minimum score for a polygon fragment from index i to j
+    int solve(vector<int> &values, vector<vector<int>> &memo, int i, int j) {
+        // Base Case: If there are fewer than 3 vertices, we cannot form a triangle
+        if(j - i + 1 < 3) {
+            return 0;
+        }
+
+        // Return cached result if we have already solved this sub-polygon
+        if(memo[i][j] != -1) {
+            return memo[i][j];
+        }
+
+        int result = INT_MAX;
+        
+        // Try every possible vertex 'k' between i and j to form the "base" triangle (i, k, j)
+        for(int k = i + 1; k < j; k++) {
+            // Cost = (current triangle i-k-j) + (cost of left sub-polygon) + (cost of right sub-polygon)
+            int wt = values[i] * values[j] * values[k] 
+                        + solve(values, memo, i, k) + solve(values, memo, k, j);
+
+            result = min(result, wt);
+        }
+
+        // Store and return the minimum cost for the interval [i, j]
+        return memo[i][j] = result;
+    }
+
+    int minScoreTriangulation(vector<int>& values) {
+        int n = values.size();
+        // Initialize memo table with -1 to track unvisited states
+        vector<vector<int>> memo(n + 1, vector<int>(n + 1, -1));
+
+        // Start solving for the full polygon from vertex 0 to n-1
+        return solve(values, memo, 0, n - 1);
+    }
+};
