@@ -1,0 +1,41 @@
+//approach - 1 - recursion + memoization
+//time complexity - O(m * n)
+//space complexity - O(m * n)
+class Solution {
+public:
+    int solve(string &s1, string &s2, vector<vector<int>> &memo, int i, int j) {
+        int m = s1.length();
+        int n = s2.length();
+
+        // Base Case: If s1 is exhausted, insert remaining characters of s2
+        if(i == m) return n - j;
+        
+        // Base Case: If s2 is exhausted, delete remaining characters of s1
+        if(j == n) return m - i;
+
+        // Return cached result if this subproblem was already solved
+        if(memo[i][j] != -1) return memo[i][j];
+
+        // If characters match, no operation needed; move to next pair
+        if(s1[i] == s2[j]) {
+            return memo[i][j] = solve(s1, s2, memo, i + 1, j + 1);
+        }
+
+        // If characters differ, try all three possible operations:
+        // 1. Insert: Stay at i, move to next in s2
+        int insert = 1 + solve(s1, s2, memo, i, j + 1);
+        // 2. Delete: Move to next in s1, stay at j
+        int delet  = 1 + solve(s1, s2, memo, i + 1, j);
+        // 3. Update: Move to next in both s1 and s2
+        int update = 1 + solve(s1, s2, memo, i + 1, j + 1);
+
+        // Store and return the minimum cost of the three choices
+        return memo[i][j] = min({insert, delet, update});
+    }
+
+    int minDistance(string word1, string word2) {
+        // Initialize memo table with -1 for Top-Down DP
+        vector<vector<int>> memo(word1.length() + 1, vector<int>(word2.length() + 1, -1));
+        return solve(word1, word2, memo, 0, 0);
+    }
+};
