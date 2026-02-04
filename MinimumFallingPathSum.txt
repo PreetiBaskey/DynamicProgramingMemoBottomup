@@ -1,0 +1,54 @@
+//approach - 1
+//time complexity - O(n^2)
+//space complexity - O(n^2)
+class Solution {
+public:
+    int solve(vector<vector<int>> &matrix, vector<vector<int>> &memo, int row, int col) {
+        int n = matrix.size();
+
+        // Base Case: If we reach the last row, the path sum is just the cell value
+        if(row == n - 1) {
+            return matrix[row][col];
+        }
+
+        // Memoization: Return stored result if we have calculated this cell before
+        if(memo[row][col] != -1e9) {
+            return memo[row][col];
+        }
+
+        int minSum = INT_MAX;
+        int currentVal = matrix[row][col];
+        
+        // Explore 3 directions: Diagonal Right, Directly Down, and Diagonal Left
+        // 1. Diagonal Right
+        if(row + 1 < n && col + 1 < n) {
+            minSum = min(minSum, currentVal + solve(matrix, memo, row + 1, col + 1));    
+        }
+        // 2. Directly Below
+        if(row + 1 < n) {
+            minSum = min(minSum, currentVal + solve(matrix, memo, row + 1, col));
+        }
+        // 3. Diagonal Left
+        if(row + 1 < n && col - 1 >= 0) {
+            minSum = min(minSum, currentVal + solve(matrix, memo, row + 1, col - 1));
+        }
+
+        // Store and return the minimum path sum starting from this cell
+        return memo[row][col] = minSum;
+    }
+
+    int minFallingPathSum(vector<vector<int>>& matrix) {
+        int n = matrix.size();
+        int result = INT_MAX;
+
+        // Initialize memo with -1e9 (a value that won't occur as a valid sum)
+        vector<vector<int>> memo(n, vector<int>(n, -1e9));
+
+        // A falling path can start from ANY column in the first row
+        for(int col = 0; col < n; col++) {
+            result = min(result, solve(matrix, memo, 0, col));
+        }
+
+        return result; 
+    }
+};
