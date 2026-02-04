@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int countWays(int n, int k) {
+        long long mod = 1e9 + 7;
+        
+        // Handle edge case for n = 1
+        if (n == 1) return k;
+        
+        // Initializing for n = 2
+        long long same = k % mod; // Last two same (k choices for the 1st, 1 choice for 2nd)
+        long long diff = (k * (k - 1LL)) % mod; // Last two different (k choices for 1st, k-1 for 2nd)
+        long long total = (same + diff) % mod;
+        
+        for(int i = 3; i <= n; i++) {
+            same = diff; // To be same as i-1, i-1 and i-2 must have been different
+            diff = (total * (k - 1LL)) % mod; // To be different, use any of k-1 colors
+            total = (same + diff) % mod;
+        }
+        
+        return (int)total;
+    }
+};
