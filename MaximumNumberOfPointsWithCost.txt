@@ -1,0 +1,92 @@
+//approach - 1 - bottom-up dynamic programming
+//time complexity - O(m * n^2)
+//space complexity - O(n)
+// class Solution {
+// public:
+//     // Problem: Maximize points by picking one cell per row.
+//     // Penalty: abs(prev_col - curr_col) for choices in adjacent rows.
+//     long long maxPoints(vector<vector<int>>& points) {
+//         int m = points.size();
+//         int n = points[0].size();
+
+//         // prev[col] stores the max points ending at 'col' in the previous row
+//         vector<long long> prev(n);
+
+//         // Base Case: For the first row (row 0), there are no penalties.
+//         for(int col = 0; col < n; col++) {
+//             prev[col] = points[0][col];
+//         }
+
+//         // Process each subsequent row one by one
+//         for(int row = 1; row < m; row++) {
+//             vector<long long> curr(n, 0);
+            
+//             // For every cell in the current row...
+//             for(int col = 0; col < n; col++) {
+//                 // ...check every possible cell in the previous row (k)
+//                 // Score = (Prev Score) + (Points at current cell) - (Distance Penalty)
+//                 for(int k = 0; k < n; k++) {
+//                     curr[col] = max(curr[col], prev[k] + points[row][col] - abs(col - k));
+//                 }
+//             }
+
+//             // Move to the next row: current row results become 'prev' for the next iteration
+//             prev = curr;
+//         }
+
+//         // The answer is the maximum value achieved in the final row
+//         return *max_element(begin(prev), end(prev));
+//     }
+// };
+
+
+
+
+//approach - 2 - optimized approach
+//time complexity - O(m * n)
+//space complexity - O(n)
+class Solution {
+public:
+    long long maxPoints(vector<vector<int>>& points) {
+        int m = points.size();
+        int n = points[0].size();
+
+        // Stores the maximum points achievable ending at each column of the previous row
+        vector<long long> prev(n);
+        for(int col = 0; col < n; col++) {
+            prev[col] = points[0][col];
+        }
+
+        for(int i = 1; i < m; i++) {
+            // left[j] stores the best score from the left side (including distance penalty)
+            // right[j] stores the best score from the right side (including distance penalty)
+            vector<long long> left(n, 0);
+            vector<long long> right(n, 0);
+
+            // Fill left: the best value is either the cell above OR the best value to its left minus 1
+            left[0] = prev[0];
+            for(int j = 1; j < n; j++) {
+                left[j] = max(prev[j], left[j - 1] - 1);
+            }
+
+            // Fill right: the best value is either the cell above OR the best value to its right minus 1
+            right[n - 1] = prev[n - 1];
+            for(int j = n - 2; j >= 0; j--) {
+                right[j] = max(prev[j], right[j + 1] - 1);
+            }
+
+            vector<long long> curr(n);
+            for(int j = 0; j < n; j++) {
+                // The current cell's max is its own value plus the best reachable value from above
+                curr[j] = points[i][j] + max(left[j], right[j]);
+            }
+
+            // Move to the next row
+            prev = curr;
+        }
+
+        // Return the highest score found in the last row
+        return *max_element(begin(prev), end(prev));
+    }
+};
+
