@@ -1,0 +1,53 @@
+//approach - 1 - recursion + memoization
+//time complexity - O(n * amount)
+//space complexity - O(n * amount)
+class Solution {
+public:
+    // Top-Down Dynamic Programming with Memoization
+    int solve(vector<int> &coins, int amount, vector<vector<int>> &memo, int idx) {
+        int n = coins.size();
+
+        // Success Base Case: Exact amount formed
+        if(amount == 0) {
+            return 0;
+        }
+
+        // Failure Base Case: Out of coins or invalid amount
+        if(idx == n || amount < 0) {
+            return 1e9; // Use a large value to represent 'Infinity'
+        }
+
+        // Check if result for this state (current coin index and amount) is already computed
+        if(memo[idx][amount] != -1) {
+            return memo[idx][amount];
+        }
+
+        // Choice 1: Skip the current coin and move to the next index
+        int notTake = solve(coins, amount, memo, idx + 1);
+
+        // Choice 2: Use the current coin (stay at 'idx' to allow multiple uses of the same coin)
+        int take = 1e9;
+        if(amount >= coins[idx]) {
+            int res = solve(coins, amount - coins[idx], memo, idx);
+            // Only increment count if the recursive path was successful
+            if(res != 1e9) {
+                take = 1 + res;
+            }
+        }
+
+        // Store and return the minimum of both choices
+        return memo[idx][amount] = min(take, notTake);
+    }
+
+    int coinChange(vector<int>& coins, int amount) {
+        int n = coins.size();
+
+        // 2D memo table: rows = coin index, columns = current amount
+        vector<vector<int>> memo(n + 1, vector<int>(amount + 1, -1));
+
+        int res = solve(coins, amount, memo, 0);
+        
+        // If result is still 1e9, it means the amount cannot be formed
+        return (res >= 1e9) ? -1 : res;
+    }
+};
