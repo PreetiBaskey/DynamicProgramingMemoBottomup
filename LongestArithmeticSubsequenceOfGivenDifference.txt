@@ -1,0 +1,25 @@
+//approach - 2
+//time complexity - O(n)
+//space complexity - O(n)
+class Solution {
+public:
+    int longestSubsequence(vector<int>& arr, int difference) {
+        // mp[x] stores the length of the longest arithmetic subsequence ending with value x
+        unordered_map<int, int> mp;
+        int result = 0;
+
+        for (int val : arr) {
+            // Calculate the expected previous term in the arithmetic sequence
+            int prev = val - difference;
+            
+            // If 'prev' was seen before, extend that sequence; otherwise, start a new one (0 + 1)
+            // Note: mp[prev] defaults to 0 if the key doesn't exist
+            mp[val] = mp[prev] + 1;
+
+            // Track the maximum length found so far
+            result = max(result, mp[val]);
+        }
+
+        return result;
+    }
+};
