@@ -1,0 +1,41 @@
+//approach - 1
+//time complexity - O(n^2)
+//space complexity - O(n^2)
+class Solution {
+public:
+    int solve(string &s, vector<vector<int>> &memo, int i, int j) {
+        // Base Case 1: Pointers have crossed (empty string segment)
+        if(i > j) {
+            return 0;
+        }
+        // Base Case 2: Single character (always a palindrome of length 1)
+        if(i == j) {
+            return 1;
+        }
+
+        // Return already computed result to avoid redundant calculations
+        if(memo[i][j] != -1) {
+            return memo[i][j];
+        }
+
+        // Case A: Outer characters match
+        // Add 2 to the result and move both pointers inward
+        if(s[i] == s[j]) {
+            return memo[i][j] = 2 + solve(s, memo, i + 1, j - 1);
+        }
+    
+        // Case B: Characters don't match
+        // Try skipping either the left or right character and take the maximum
+        else {
+            return memo[i][j] = max(solve(s, memo, i + 1, j), solve(s, memo, i, j - 1));
+        }
+    } 
+
+    int longestPalindromeSubseq(string s) {
+        int n = s.length();
+
+        // Initialize memo table with -1 (representing unvisited states)
+        vector<vector<int>> memo(n, vector<int>(n, -1));
+        return solve(s, memo, 0, n - 1);
+    }
+};
