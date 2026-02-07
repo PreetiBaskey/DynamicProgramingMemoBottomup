@@ -1,0 +1,90 @@
+//approach - 1 - without memoization
+//time complexity - O(2^n) or O(m^n)
+//space complexity - O(n)
+// class Solution {
+// public:
+//     bool solve(vector<int> &nums, int n, int idx) {
+//         if(idx == n - 1) {
+//             return true;
+//         }
+
+//         for(int i = 1; i <= nums[idx]; i++) {
+//             if(solve(nums, n, idx + i) == true) {
+//                 return true;
+//             }
+//         }
+
+//         return false;
+//     }
+//     bool canJump(vector<int>& nums) {
+//         int n = nums.size();
+
+//         return solve(nums, n, 0);
+//     }
+// };
+
+
+
+
+//approach - 2 - with memoization
+//time complexity - O(n*max(nums))
+//space complexity - O(n)
+// class Solution {
+// public:
+//     bool solve(vector<int> &nums, vector<int> &memo, int n, int idx) {
+//         if(idx == n - 1) {
+//             return true;
+//         }
+
+//         if(memo[idx] != -1) {
+//             return memo[idx];
+//         }
+
+//         for(int i = 1; i <= nums[idx]; i++) {
+//             if(solve(nums, memo, n, idx + i) == true) {
+//                 return memo[idx] = true;
+//             }
+//         }
+
+//         return memo[idx] = false;
+//     }
+//     bool canJump(vector<int>& nums) {
+//         int n = nums.size();
+//         vector<int> memo(n + 1, -1);
+
+//         return solve(nums, memo, n, 0);
+//     }
+// };
+
+
+
+//approach - 3
+//time complexity - O(n^2)
+//space complexity - O(n)
+class Solution {
+public:
+    bool canJump(vector<int>& nums) {
+        int n = nums.size();
+        
+        // DP Table: memo[i] stores whether index 'i' is reachable from the start
+        vector<bool> memo(n, false);
+
+        // BASE CASE: The starting position is always reachable
+        memo[0] = true;
+
+        // Iterate through each index to determine its reachability
+        for(int i = 1; i < n; i++) {
+            // Check all previous indices 'j' to see if any can "jump" to 'i'
+            for(int j = i - 1; j >= 0; j--) {
+                // If index 'j' is reachable AND its jump range reaches or exceeds 'i'
+                if(memo[j] == true && j + nums[j] >= i) {
+                    memo[i] = true; 
+                    break; // Optimization: Found one path to 'i', no need to check other 'j's
+                }
+            }
+        }
+
+        // Return whether the last index was marked as reachable
+        return memo[n - 1];
+    }
+};
