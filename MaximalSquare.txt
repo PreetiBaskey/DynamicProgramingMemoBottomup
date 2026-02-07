@@ -1,0 +1,61 @@
+//approach - 1 - recursion + memoization, top-down approach
+//time complexity - O(m * n)
+//space complexity - O(m * n)
+class Solution {
+public:
+    /**
+     * @param matrix: Input binary matrix
+     * @param result: Stores the maximum side length found so far (passed by reference)
+     * @param memo: Table to cache side lengths for each (row, col)
+     * @return: Side length of the largest square starting at (row, col)
+     */
+    int solve(vector<vector<char>> &matrix, int &result, vector<vector<int>> &memo, int row, int col) {
+        int m = matrix.size();
+        int n = matrix[0].size();
+
+        // BASE CASE: If out of bounds, no square can be formed
+        if(row >= m || col >= n) {
+            return 0;
+        }
+
+        // MEMOIZATION: Return cached result if we have solved this cell before
+        if(memo[row][col] != -1) {
+            return memo[row][col];
+        }
+
+        // RECURSIVE STEP: Explore three directions to find the limiting boundary
+        int right = solve(matrix, result, memo, row, col + 1);
+        int diagonal = solve(matrix, result, memo, row + 1, col + 1);
+        int down = solve(matrix, result, memo, row + 1, col);
+
+        // If current cell is '1', it can be the top-left of a square
+        if(matrix[row][col] == '1') {
+            // Logic: The side of a square is limited by its smallest neighbor
+            memo[row][col] = 1 + min({right, diagonal, down});
+            
+            // Track the globally largest side length found
+            result = max(result, memo[row][col]);
+
+            return memo[row][col];
+        }
+        else {
+            // If current cell is '0', no square can start here
+            return memo[row][col] = 0;
+        }
+    }
+
+    int maximalSquare(vector<vector<char>>& matrix) {
+        int m = matrix.size();
+        int n = matrix[0].size();
+
+        int result = 0;
+        // Initialize memo table with -1 (meaning "unvisited")
+        vector<vector<int>> memo(m + 1, vector<int>(n + 1, -1));
+        
+        // Start recursion from top-left (0, 0)
+        solve(matrix, result, memo, 0, 0);
+
+        // Problem asks for Area, so square the side length
+        return result * result;
+    }
+};
