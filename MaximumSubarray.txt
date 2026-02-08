@@ -1,0 +1,43 @@
+//approach - 1
+//time complexity - O(n)
+//space complexity - O(1)
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        int globalMax = nums[0];
+        int currentSum = nums[0];
+
+        for (int i = 1; i < nums.size(); i++) {
+            // Decide: start new subarray here or extend the previous one?
+            currentSum = max(nums[i], currentSum + nums[i]);
+            // Update the overall best found so far
+            globalMax = max(globalMax, currentSum);
+        }
+        return globalMax;
+    }
+};
+
+
+
+//approach - 2 - dp solution/approach
+//time complexity - O(n)
+//space comlexity - O(n)
+int maxSubArray(vector<int>& nums) {
+    int n = nums.size();
+    if (n == 0) return 0;
+    
+    // dp[i] = max subarray sum ending at index i
+    vector<int> dp(n);
+    dp[0] = nums[0];
+    int globalMax = dp[0];
+
+    for (int i = 1; i < n; i++) {
+        // Core DP transition
+        dp[i] = max(nums[i], dp[i - 1] + nums[i]);
+        
+        // Track the overall maximum found in the table
+        globalMax = max(globalMax, dp[i]);
+    }
+    
+    return globalMax;
+}
