@@ -1,0 +1,33 @@
+//approach - 1 - linear dynamic programming
+//time complexity - O(n)
+//space complexity - O(1)
+class Solution {
+public:
+    int wiggleMaxLength(vector<int>& nums) {
+        int n = nums.size();
+        
+        // Base case: If array has 0 or 1 element, the length is the size itself
+        if (n < 2) return n;
+
+        // up: Longest wiggle ending with a 'rise' (peak)
+        // down: Longest wiggle ending with a 'fall' (valley)
+        int up = 1, down = 1;
+
+        for (int i = 1; i < n; i++) {
+            if (nums[i] > nums[i - 1]) {
+                // If current is higher than previous, we can extend 
+                // a sequence that was previously falling.
+                up = down + 1;
+            } 
+            else if (nums[i] < nums[i - 1]) {
+                // If current is lower than previous, we can extend 
+                // a sequence that was previously rising.
+                down = up + 1;
+            }
+            // Note: If nums[i] == nums[i-1], we do nothing and skip it
+        }
+        
+        // The answer is the maximum of the two possible ending states
+        return max(up, down);
+    }
+};
