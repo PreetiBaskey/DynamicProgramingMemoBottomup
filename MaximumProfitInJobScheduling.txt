@@ -1,0 +1,66 @@
+//approach - 1
+//time complexity - O(nlogn)
+//space complexity - O(n)
+class Solution {
+public:
+    // Finds the next job that starts AFTER or AT the current job ends (Binary Search)
+    int getNext(vector<vector<int>> &array, int l, int currEnd) {
+        int n = array.size();
+        int result = n; // Default to n (out of bounds) if no job is found
+
+        int r = n - 1;
+        while(l <= r) {
+            int mid = l + (r - l) / 2;
+            if(array[mid][0] >= currEnd) { // Job starts after current ends
+                result = mid;
+                r = mid - 1; // Try to find an even earlier valid job
+            } else {
+                l = mid + 1;
+            }
+        }
+        return result;
+    }
+
+    // Top-down DP with memoization
+    int solve(vector<vector<int>> &array, vector<int> &memo, int i) {
+        int n = array.size();
+
+        // Base Case: No more jobs left to process
+        if(i >= n) return 0;
+
+        // Return cached result if already calculated
+        if(memo[i] != -1) return memo[i];
+
+        // 1. Pick current job: Add profit and jump to the next available job
+        int next = getNext(array, i + 1, array[i][1]);
+        int taken = array[i][2] + solve(array, memo, next);
+
+        // 2. Skip current job: Move to the immediate next index
+        int notTaken = solve(array, memo, i + 1);
+
+        // Store and return the best of both choices
+        return memo[i] = max(taken, notTaken);
+    }
+
+    int jobScheduling(vector<int>& startTime, vector<int>& endTime, vector<int>& profit) {
+        int n = startTime.size();
+
+        // Group data into {start, end, profit} for easier sorting
+        vector<vector<int>> array(n, vector<int>(3));
+        for(int i = 0; i < n; i++) {
+            array[i][0] = startTime[i];
+            array[i][1] = endTime[i];
+            array[i][2] = profit[i];
+        }
+
+        // Sort jobs by start time to enable binary search for future jobs
+        sort(begin(array), end(array), [](auto &a, auto &b) {
+            return a[0] < b[0];
+        });
+
+        // Initialize memo table with -1
+        vector<int> memo(n, -1);
+
+        return solve(array, memo, 0);
+    }
+};
