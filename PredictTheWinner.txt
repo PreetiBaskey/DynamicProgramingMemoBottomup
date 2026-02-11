@@ -1,0 +1,45 @@
+//approach - 1 - recursion
+//time complexity - O(2^n)
+//space complexity - O(n)
+class Solution {
+public:
+    int solve(vector<int> &nums, int i, int j) {
+        // BASE CASE: If the start index passes the end index, no numbers are left.
+        if (i > j) return 0;
+        
+        /* 
+           OPTION 1: Player 1 picks the leftmost element nums[i].
+           - If Player 2 then picks nums[i+1], Player 1 is left with solve(i+2, j)
+           - If Player 2 then picks nums[j], Player 1 is left with solve(i+1, j-1)
+           Since Player 2 plays optimally, they will leave Player 1 with the MINIMUM of these two.
+        */
+        int taken_i = nums[i] + min(solve(nums, i + 2, j), solve(nums, i + 1, j - 1));
+        
+        /* 
+           OPTION 2: Player 1 picks the rightmost element nums[j].
+           - If Player 2 then picks nums[i], Player 1 is left with solve(i+1, j-1)
+           - If Player 2 then picks nums[j-1], Player 1 is left with solve(i, j-2)
+           Again, Player 2 will leave Player 1 with the MINIMUM possible outcome.
+        */
+        int taken_j = nums[j] + min(solve(nums, i + 1, j - 1), solve(nums, i, j - 2));
+        
+        // Player 1 chooses the move that MAXIMIZES their final score.
+        return max(taken_i, taken_j);
+    }
+
+    bool predictTheWinner(vector<int>& nums) {
+        int n = nums.size();
+        
+        // Calculate the total sum of all numbers in the array.
+        long long totalSum = accumulate(begin(nums), end(nums), 0LL);
+
+        // p1 is the maximum score Player 1 can get playing optimally.
+        int p1 = solve(nums, 0, n - 1);
+
+        // The remaining points go to Player 2.
+        long long p2 = totalSum - p1;
+
+        // Player 1 wins if their score is greater than or equal to Player 2's.
+        return p1 >= p2;
+    }
+};
