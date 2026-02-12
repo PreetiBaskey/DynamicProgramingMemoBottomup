@@ -1,0 +1,59 @@
+//approach - 1 - recursion + memoization
+//game strategy
+//1. when it's your turn, do your best
+//2. when it's your opponent's turn, expect the worst
+//time complexity - O(n^3)
+//space complexity - O(n^2)
+class Solution {
+public:
+    /**
+     * @param person: 1 for Alice (Maximizer), 0 for Bob (Minimizer)
+     * @param i: Current starting index in the piles
+     * @param m: The current game constraint (can take X piles where 1 <= X <= 2M)
+     */
+    int solveForAlice(vector<int> &piles, vector<vector<vector<int>>> &memo, int person, int i, int m) {
+        int n = piles.size();
+
+        // Base Case: No more stones left to pick
+        if(i >= n) return 0;
+
+        // Memoization: Return cached result if already calculated for this state
+        if(memo[person][i][m] != -1) {
+            return memo[person][i][m];
+        }
+
+        int stone = 0;
+        // Alice starts very low to find Max; Bob starts very high to find Min
+        int result = (person == 1) ? -1 : INT_MAX;
+
+        // Try taking X piles, where 1 <= X <= 2M
+        for(int x = 1; x <= min(2 * m, n - i); x++) {
+            // Track total stones taken in this turn
+            stone += piles[i + x - 1];
+
+            if(person == 1) {
+                // Alice's turn: She takes stones and adds them to her future score
+                // She wants to MAXIMIZE this total
+                result = max(result, stone + solveForAlice(piles, memo, 0, i + x, max(m, x)));
+            }
+            else {
+                // Bob's turn: He takes stones (Alice gets 0), then passes turn back
+                // He wants to MINIMIZE Alice's future score
+                result = min(result, solveForAlice(piles, memo, 1, i + x, max(m, x)));
+            }
+        }
+
+        // Cache and return the best possible score for Alice from this state
+        return memo[person][i][m] = result;
+    }
+
+    int stoneGameII(vector<int>& piles) {
+        int n = piles.size();
+        
+        // 3D Memo: [2 turns][n index][n+1 possible M values]
+        vector<vector<vector<int>>> memo(2, vector<vector<int>>(n + 1, vector<int>(n + 1, -1)));
+        
+        // Game starts with Alice (1) at index 0 with M = 1
+        return solveForAlice(piles, memo, 1, 0, 1);
+    }
+};
