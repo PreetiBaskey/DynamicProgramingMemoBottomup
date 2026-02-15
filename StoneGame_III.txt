@@ -1,0 +1,123 @@
+//approach - 1 - recusion + memoization - top down approach
+//time complexity - O(n)
+//space complexity - O(n)
+// class Solution {
+// public:
+//     /**
+//      * This function calculates the maximum relative score (Alice - Bob) 
+//      * starting from index 'i'.
+//      */
+//     int solve(vector<int> &stoneValue, vector<int> &memo, int i) {
+//         int n = stoneValue.size();
+
+//         // Base Case: No more stones available, the score difference is 0
+//         if(i >= n) return 0;
+
+//         // Memoization: Return the precomputed score difference for this position
+//         if(memo[i] != -1) {
+//             return memo[i];
+//         }
+
+//         // We want to maximize: (Current stones picked) - (Best score opponent can get)
+//         int result = INT_MIN;
+        
+//         // Option 1: Take only the 1st stone
+//         result = max(result, stoneValue[i] - solve(stoneValue, memo, i + 1));
+        
+//         // Option 2: Take the 1st and 2nd stones
+//         if(i + 1 < n) {
+//             result = max(result, (stoneValue[i] + stoneValue[i + 1]) - solve(stoneValue, memo, i + 2));
+//         }
+
+//         // Option 3: Take the 1st, 2nd, and 3rd stones
+//         if(i + 2 < n) {
+//             result = max(result, (stoneValue[i] + stoneValue[i + 1] + stoneValue[i + 2]) - solve(stoneValue, memo, i + 3));
+//         }
+
+//         // Store and return the best relative score Alice can achieve from index i
+//         return memo[i] = result;
+//     }
+
+//     string stoneGameIII(vector<int>& stoneValue) {
+//         int n = stoneValue.size();
+        
+//         // Initialize memo with -1. Note: If stone values can be negative, 
+//         // using -1 as a 'not visited' flag might be risky, but works here as 
+//         // result is compared relatively.
+//         vector<int> memo(n + 1, -1);
+        
+//         int result = solve(stoneValue, memo, 0);
+
+//         // Interpretation of the relative score (Alice Score - Bob Score):
+//         // > 0 means Alice has more
+//         // < 0 means Bob has more
+//         if(result > 0) return "Alice";
+//         if(result < 0) return "Bob";
+//         return "Tie";
+//     }
+// };
+
+
+//approach - 2 - bottom up
+//time complexity - O(n)
+//space complexity - O(n)
+// class Solution {
+// public:
+//     string stoneGameIII(vector<int>& stoneValue) {
+//         int n = stoneValue.size();
+        
+//         vector<int> t(n + 1, -1e9);
+//         t[n] = 0;
+//         for(int i = n - 1; i >= 0; i--) {
+//             if(i + 1 <= n) 
+//                 t[i] = max(t[i], stoneValue[i] - t[i + 1]);
+            
+//             if(i + 2 <= n) 
+//                 t[i] = max(t[i], stoneValue[i] + stoneValue[i + 1] - t[i + 2]);
+
+//             if(i + 3 <= n)
+//                 t[i] = max(t[i], stoneValue[i] + stoneValue[i + 1] + stoneValue[i + 2] - t[i + 3]);
+ 
+//         }
+
+//         int diff = t[0];
+//         if(diff > 0) return "Alice";
+//         else if(diff < 0) return "Bob";
+//         else return "Tie";
+//     }
+// };
+
+
+
+//approach - 3 
+//time complexity - O(n)
+//space complexity - O(1)
+class Solution {
+public:
+    string stoneGameIII(vector<int>& stoneValue) {
+        int n = stoneValue.size();
+
+        int t1 = 0, t2 = 0, t3 = 0;
+        for(int i = n - 1; i >= 0; i--) {
+            int current_i = -1e9;
+            
+            if(i + 1 <= n) 
+                current_i = max(current_i, stoneValue[i] - t1);
+            
+            if(i + 2 <= n) 
+                current_i = max(current_i, stoneValue[i] + stoneValue[i + 1] - t2);
+
+            if(i + 3 <= n)
+                current_i = max(current_i, stoneValue[i] + stoneValue[i + 1] + stoneValue[i + 2] - t3);
+ 
+            t3 = t2;
+            t2 = t1;
+            t1 = current_i;
+        }
+
+        int diff = t1;
+        if(diff > 0) return "Alice";
+        else if(diff < 0) return "Bob";
+        else return "Tie";
+    }
+};
