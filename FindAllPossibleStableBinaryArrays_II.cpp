@@ -1,3 +1,6 @@
+//approach - 1 - dynamic programming
+//time complexity - O(zero * one)
+//space complexity - O(zero * one)
 class Solution {
 public:
     int numberOfStableArrays(int zero, int one, int limit) {
