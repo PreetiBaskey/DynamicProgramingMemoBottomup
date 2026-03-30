@@ -94,10 +94,10 @@ public:
 
         int prevPrev = 0;
         int prev = 1;
-
         int curr;
-        for(int i = 1; i < n; i++) {
-            curr = prev + prevPrev;
+
+        for(int i = 0; i < n - 1; i++) {
+            curr = prevPrev + prev;
 
             prevPrev = prev;
             prev = curr;
