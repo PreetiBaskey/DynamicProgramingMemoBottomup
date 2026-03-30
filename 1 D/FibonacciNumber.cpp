@@ -49,10 +49,60 @@ public:
 
 
 
+
 //approach - 3 - using bottom up
-//time complexity - 
-//space complexity - 
+//time complexity - O(n)
+//space complexity - O(n)
 
 //State definition
 //dp[i] = ith fibonacci number
 //return dp[5]
+
+
+// class Solution {
+// public:
+//     int fib(int n) {
+//         if(n <= 1) {
+//             return n;
+//         }
+
+//         vector<int> dp(n + 1);
+//         dp[0] = 0;
+//         dp[1] = 1;
+
+//         for(int i = 2; i <= n; i++) {
+//             dp[i] = dp[i - 1] + dp[i - 2];
+//         }
+
+//         return dp[n];
+//     }
+// };
+
+
+
+
+
+//approach - 4 - with constant space complexity
+//time complexity - O(n)
+//space complexity - O(1)
+class Solution {
+public:
+    int fib(int n) {
+        if(n <= 1) {
+            return n;
+        }
+
+        int prevPrev = 0;
+        int prev = 1;
+
+        int curr;
+        for(int i = 1; i < n; i++) {
+            curr = prev + prevPrev;
+
+            prevPrev = prev;
+            prev = curr;
+        }
+
+        return curr;
+    }
+};
